@@ -1,0 +1,30 @@
+# 開発環境用
+version: "3.8"
+
+services:
+  # Flaskアプリケーションサービス
+  app:
+    build: . # このディレクトリのDockerfileからビルド
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app # ローカルのコードをコンテナに同期
+    environment:
+      - FLASK_ENV=development # 開発モードで起動
+      - DATABASE_URL=postgresql://user:password@db:5432/mydatabase # DB接続情報
+    depends_on:
+      - db
+
+  # PostgreSQLデータベースサービス
+  db:
+    image: postgres:13-alpine # 公式イメージを使用
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=mydatabase
+    volumes:
+      - pgdata:/var/lib/postgresql/data # データを永続化
+
+volumes:
+  pgdata:
